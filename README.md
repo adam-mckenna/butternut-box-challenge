@@ -21,7 +21,7 @@ The dates listed should show the current month. You should correctly dynamically
 Some notes:
 
 1. We’re keen to ensure that it’s a collaborative effort - feel free to check in regularly to
-discuss any aspect of the project.
+   discuss any aspect of the project.
 2. The modal should only be rendered on the page (added to the DOM) when open. We don't want extra HTML nodes hanging around on the page when it's closed. Think about how this might impact the animation of the item.
 3. Further animation beyond the opening and closing of the modal and any other ideas you have to improve the user experience and show off your attention to detail would be a great bonus!
 4. You can only select one date at a time in the calendar.
