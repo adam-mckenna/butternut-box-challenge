@@ -6,31 +6,22 @@ html {
   padding: 3em;
 }
 
-h1,
-h2,
-h3 {
+h2 {
   color: $brand-blue-500;
   font-family: $font-family-headings;
   display: flex;
   align-items: center;
-}
-
-h2 {
   font-size: 1.5em;
 }
-.tab {
+
+.title .tab {
+  font-size: 0.625em;
   font-family: $font-family-base-regular;
   padding: 0.25em 0.5em;
   font-weight: 300;
   color: $brand-blue-400;
   background-color: $grey-200;
   margin: 0.5em 0.75em;
-}
-
-.title {
-  & .tab {
-    font-size: 0.625em;
-  }
 }
 
 .card {
@@ -41,6 +32,7 @@ h2 {
   background-color: white;
   color: $brand-blue-500;
   font-family: $font-family-base-regular;
+
   // Note: probably wouldn't use this property in production due to support in older browsers
   width: fit-content;
 
@@ -73,6 +65,7 @@ h2 {
     font-size: 1em;
     padding: 0 1em 0 2em;
     text-decoration: underline;
+
     // ToDo: figure out how to animate this on hover
     border-top-left-radius: 25px;
     border-bottom-left-radius: 25px;
@@ -83,6 +76,7 @@ h2 {
     }
 
     &::after {
+      // ToDo: would rather use an icon here
       content: ">";
       display: inline-block;
       margin-left: 0.25em;
@@ -92,9 +86,8 @@ h2 {
 
 .modal {
   position: absolute;
-  background-color: grey;
+  background-color: $grey-300;
   cursor: pointer;
-
   height: 100vh;
   width: 100vw;
   top: 0;
@@ -114,6 +107,7 @@ h2 {
 .calendar {
   &-header {
     margin-bottom: 0.5em;
+
     ul {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
@@ -148,14 +142,14 @@ h2 {
       background-color: $warning-orange-300;
     }
 
-    &.disabled {
+    &--disabled {
       pointer-events: none;
       background-color: $grey-300;
       color: $grey-400;
       border: none;
     }
 
-    &.selected {
+    &--selected {
       color: white;
       background-color: $warning-orange-300;
     }
@@ -188,6 +182,7 @@ h2 {
   text-align: center;
   margin-top: 1em;
 
+  // ToDo: remove duplication between these buttons and the calendar buttons
   .button {
     font-family: $font-family-base-regular;
     border: 1px solid $warning-orange-300;

@@ -59,12 +59,10 @@ const App = () => {
 
     setSelectedDate(getEarliestAvailableDate(currentDate));
     setConfirmedDate(selectedDate);
-  }, []);
-
-  console.log(selectedDate);
+  }, [setConfirmedDate, setSelectedDate]);
 
   return (
-    <div className="App">
+    <div>
       <h2 className="title">
         Choose your delivery day
         <span className="tab">Delivery is always free</span>
@@ -89,14 +87,14 @@ const App = () => {
         {isModalOpen && (
           <div
             className="modal"
-            onClick={(e) => {
-              if (e.target === e.currentTarget) {
+            onClick={({ target, currentTarget}) => {
+              if (target === currentTarget) {
                 setIsModalOpen(false);
               }
             }}
           >
             <div className="modal-body">
-              {/* Note: not certain on semantics -- would a table be better? */}
+              {/* ToDo: not certain on semantics -- would a table be better? */}
               <div className="calendar">
                 <div className="calendar-header">
                   <ul>
@@ -112,21 +110,25 @@ const App = () => {
 
                 <div className="calendar-body">
                   {Array.from({ length: getDaysInMonth(currentDate) }).map(
-                    (_, i) => (
+                    (_, i) => {
+                      const isDisabled = isDateUnavailable(
+                        i,
+                        getDay(startOfMonth(currentDate))
+                      );
+
+                      const dateOfMonth = i + 1;
+                      
+                      return (
                       <button
                         onClick={() => {
-                          setSelectedDate(
-                            new Date(
-                              `${currentDate.getMonth() + 1} ${
-                                i + 1
-                              } ${currentDate.getFullYear()}`
-                            )
-                          );
+                          const date = new Date(
+                            `${currentDate.getMonth() + 1} ${
+                              dateOfMonth
+                            } ${currentDate.getFullYear()}`
+                          )
+                          setSelectedDate(date);
                         }}
-                        disabled={isDateUnavailable(
-                          i,
-                          getDay(startOfMonth(currentDate))
-                        )}
+                        disabled={isDisabled}
                         className={`
                           calendar-date 
                           ${
@@ -136,20 +138,13 @@ const App = () => {
                                 )}`
                               : ""
                           }
-                          ${
-                            isDateUnavailable(
-                              i,
-                              getDay(startOfMonth(currentDate))
-                            )
-                              ? "disabled"
-                              : ""
-                          }
-                          ${i + 1 === getDate(selectedDate) ? "selected" : ""}
+                          ${isDisabled ? "calendar-date--disabled": ""}
+                          ${dateOfMonth === getDate(selectedDate) ? "calendar-date--selected" : ""}
                         `}
                       >
-                        {i + 1}
+                        {dateOfMonth}
                       </button>
-                    )
+                    )}
                   )}
                 </div>
               </div>
@@ -163,6 +158,7 @@ const App = () => {
                 >
                   Cancel, don't change
                 </button>
+
                 <button
                   className="button"
                   onClick={() => {
