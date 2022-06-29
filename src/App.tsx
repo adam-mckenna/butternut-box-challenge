@@ -1,12 +1,19 @@
 import './App.scss';
 
+import { ReactComponent as VanIcon } from "./img/van.svg";
+
 const App = () => (
   <div className="App">
-    <h2>Choose your delivery day</h2>
-    <p>Delivery is always free</p>
+    <h2 className="title">
+      Choose your delivery day
+      <span className="tab">Delivery is always free</span>
+    </h2>
     <div className="card">
-      <p>Date...</p>
-      <span>Earliest delivery...</span>
+      <div>
+        
+      <p>Thur March 14</p>
+      <span className="tab"><VanIcon/>Earliest delivery</span>
+      </div>
 
       <button>
         Change
