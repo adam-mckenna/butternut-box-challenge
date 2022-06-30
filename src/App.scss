@@ -62,9 +62,8 @@
     color: $brand-blue-500;
     font-family: $font-family-base-regular;
     font-size: 1em;
-    padding: 0 1em 0 2em;
-    text-decoration: underline;
-
+    padding: 0 1em 0 1.5em;
+    
     // ToDo: figure out how to animate this on hover
     border-top-left-radius: 25px;
     border-bottom-left-radius: 25px;
@@ -74,15 +73,36 @@
     &:hover,
     &:active {
       cursor: pointer;
-      color: white;
       background-color: $brand-blue-300;
     }
 
-    &::after {
-      // ToDo: would rather use an icon here
-      content: ">";
-      display: inline-block;
-      margin-left: 0.25em;
+    & > p { 
+      text-decoration: underline;
+      
+      &::after {
+        // ToDo: would rather use an icon here
+        content: ">";
+        display: inline-block;
+        margin-left: 0.25em;
+      }
+    }
+
+    &-calendar {
+      background-image: url('./img/calendar.svg');
+      background-size: 28px;
+      background-repeat: no-repeat;
+      background-position: 50%;
+      font-size: 14px;
+      display: flex;
+      height: 32px;
+      align-items: center;
+      justify-content: center;
+
+      p {
+        margin-top: 9px;
+        margin-left: 1px;
+        text-decoration: none;
+      }
     }
   }
 }

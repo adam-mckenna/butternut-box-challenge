@@ -122,7 +122,10 @@ const App = () => {
             setIsModalOpen(true);
           }}
         >
-          Change
+          <div className="card-button-calendar">
+            <p>{format(confirmedDate, "d")}</p>
+          </div>
+          <p>Change</p>
         </button>
 
         {isModalOpen && (
