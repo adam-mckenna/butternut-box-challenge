@@ -1,49 +1,88 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
-import {
-  addDays,
-  getDate,
-  getDay,
-  getDaysInMonth,
-  startOfMonth,
-  format,
-} from "date-fns";
+import { animated, useSpring, easings } from "@react-spring/web";
+
+import { addDays, format, getDay } from "date-fns";
+
+import Calendar from "./components/Calendar/Calendar";
+
+import { ReactComponent as VanIcon } from "./img/van.svg";
 
 import "./App.scss";
 
-import { ReactComponent as VanIcon } from "./img/van.svg";
+const Modal = ({
+  isVisible,
+  children,
+  onModalClose
+}: {
+  isVisible: boolean;
+  children: JSX.Element;
+  onModalClose: () => void;
+}) => {
+  const styles = useSpring({
+    from: { opacity: isVisible ? 0 : 1 },
+    to: { opacity: isVisible ? 1 : 0 },
+    config: { duration: 500, easing: easings.easeOutQuart },
+  });
+
+  return (
+    <animated.div
+      onClick={({ target, currentTarget }) => {
+        if (target === currentTarget) {
+          onModalClose();
+        }
+      }}
+      className="modal"
+      style={styles}
+    >
+      {children}
+    </animated.div>
+  );
+};
+
+const ModalBody = ({
+  isVisible,
+  children,
+}: {
+  isVisible: boolean;
+  children: JSX.Element;
+}) => {
+  const styles = useSpring({
+    from: {
+      y: isVisible ? 150 : 0,
+    },
+    to: {
+      y: isVisible ? 0 : 150,
+    },
+    config: { duration: 1000, easing: easings.easeOutQuart },
+  });
+
+  return (
+    <animated.div
+      className={`modal-body ${!isVisible ? "modal-body--disabled" : ""}`}
+      style={styles}
+    >
+      {children}
+    </animated.div>
+  );
+};
 
 const App = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [isExitAnimating, setIsExitAnimating] = useState(false);
 
   const [confirmedDate, setConfirmedDate] = useState(new Date());
 
-  const currentDate = new Date();
+  const today = new Date();
 
-  const isDateUnavailable = (dayOfTheMonth: number, offset: number) => {
-    const position = dayOfTheMonth + (offset - 1);
-
-    // not great ...
-    return (
-      position === 1 ||
-      position === 4 ||
-      position === 5 ||
-      position === 1 + 7 ||
-      position === 4 + 7 ||
-      position === 5 + 7 ||
-      position === 1 + 14 ||
-      position === 4 + 14 ||
-      position === 5 + 14 ||
-      position === 1 + 21 ||
-      position === 4 + 21 ||
-      position === 5 + 21 ||
-      position === 1 + 28 ||
-      position === 4 + 28 ||
-      position === 5 + 28
-    );
-  };
+  const onModalClose = () => {
+    setIsExitAnimating(true);
+    setTimeout(() => {
+      setIsModalOpen(false);
+      setIsExitAnimating(false);
+    }, 500);
+  }
 
   useEffect(() => {
     const getEarliestAvailableDate = (date: Date): Date => {
@@ -57,19 +96,20 @@ const App = () => {
       return date;
     };
 
-    setSelectedDate(getEarliestAvailableDate(currentDate));
-    setConfirmedDate(selectedDate);
-  }, [setConfirmedDate, setSelectedDate]);
+    setConfirmedDate(getEarliestAvailableDate(today));
+  }, [setConfirmedDate]);
 
   return (
-    <div>
+    <div className="app">
       <h2 className="title">
         Choose your delivery day
         <span className="tab">Delivery is always free</span>
       </h2>
+
       <div className="card">
-        <div>
+        <div className="card-body">
           <p>{format(confirmedDate, "EEE MMMM do")}</p>
+
           <span className="tab">
             <VanIcon />
             Earliest delivery
@@ -77,100 +117,25 @@ const App = () => {
         </div>
 
         <button
+          className="card-button"
           onClick={() => {
-            setIsModalOpen(!isModalOpen);
+            setIsModalOpen(true);
           }}
         >
           Change
         </button>
 
         {isModalOpen && (
-          <div
-            className="modal"
-            onClick={({ target, currentTarget}) => {
-              if (target === currentTarget) {
-                setIsModalOpen(false);
-              }
-            }}
-          >
-            <div className="modal-body">
-              {/* ToDo: not certain on semantics -- would a table be better? */}
-              <div className="calendar">
-                <div className="calendar-header">
-                  <ul>
-                    <li aria-label="Monday">M</li>
-                    <li aria-label="Tuesday">T</li>
-                    <li aria-label="Wednesday">W</li>
-                    <li aria-label="Thursday">T</li>
-                    <li aria-label="Friday">F</li>
-                    <li aria-label="Saturday">S</li>
-                    <li aria-label="Sunday">S</li>
-                  </ul>
-                </div>
-
-                <div className="calendar-body">
-                  {Array.from({ length: getDaysInMonth(currentDate) }).map(
-                    (_, i) => {
-                      const isDisabled = isDateUnavailable(
-                        i,
-                        getDay(startOfMonth(currentDate))
-                      );
-
-                      const dateOfMonth = i + 1;
-                      
-                      return (
-                      <button
-                        onClick={() => {
-                          const date = new Date(
-                            `${currentDate.getMonth() + 1} ${
-                              dateOfMonth
-                            } ${currentDate.getFullYear()}`
-                          )
-                          setSelectedDate(date);
-                        }}
-                        disabled={isDisabled}
-                        className={`
-                          calendar-date 
-                          ${
-                            i === 0
-                              ? `calendar-date--offset-${getDay(
-                                  startOfMonth(currentDate)
-                                )}`
-                              : ""
-                          }
-                          ${isDisabled ? "calendar-date--disabled": ""}
-                          ${dateOfMonth === getDate(selectedDate) ? "calendar-date--selected" : ""}
-                        `}
-                      >
-                        {dateOfMonth}
-                      </button>
-                    )}
-                  )}
-                </div>
-              </div>
-
-              <div className="button-group">
-                <button
-                  className="button button--text"
-                  onClick={() => {
-                    setIsModalOpen(!isModalOpen);
-                  }}
-                >
-                  Cancel, don't change
-                </button>
-
-                <button
-                  className="button"
-                  onClick={() => {
-                    setIsModalOpen(!isModalOpen);
-                    setConfirmedDate(selectedDate);
-                  }}
-                >
-                  Change date
-                </button>
-              </div>
-            </div>
-          </div>
+          <Modal isVisible={!isExitAnimating} onModalClose={onModalClose}>
+            <ModalBody isVisible={!isExitAnimating}>
+              <Calendar
+                today={today}
+                onModalClose={onModalClose}
+                confirmedDate={confirmedDate}
+                setConfirmedDate={setConfirmedDate}
+              />
+            </ModalBody>
+          </Modal>
         )}
       </div>
     </div>
